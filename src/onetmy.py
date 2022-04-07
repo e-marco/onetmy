@@ -173,10 +173,10 @@ def processStation(station, source_dir, pattern, outpath):
 		# Export to a file
 		tmy.export.to_csv(df, outpath)
 		
-		apply_offset = CONFIG['stations'][station]['apply_offset']
-		offset = CONFIG['stations'][station]['offset']
-		if offset!=apply_offset:
-			df = df.tz_convert(pytz.FixedOffset(apply_offset))
+		#apply_offset = CONFIG['stations'][station]['apply_offset']
+		#offset = CONFIG['stations'][station]['offset']
+		#if offset!=apply_offset:
+	#		df = df.tz_convert(pytz.FixedOffset(apply_offset))
 			
 		df.reset_index(inplace=True)
 		df['Year'] = pd.DatetimeIndex(df['datetime']).year
@@ -191,8 +191,9 @@ def processStation(station, source_dir, pattern, outpath):
 							  'dew-point':'Dew point temperature in degrees Celsius', 
 							  'relative-humidity':'Relative humidity in percentage %', 
 							  'wind-speed':'Wind (1 minute) speed in km/h', 
+							  'wind-speed-max': 'Maximum wind gust (over 1 minute) in km/h',
 							  'wind-direction':'Wind (1 minute) direction in degrees true', 
-							  'station-level-pressure':'Station level pressure in hPa', 
+							  'station-level-pressure':'Station level pressure in hPa',
 							  'mean-ghi':'Mean global horizontal irradiance (over 1 minute) in W/sq m', 
 							  'mean-dni':'Mean direct normal irradiance (over 1 minute) in W/sq m', 
 							  'mean-dhi':'Mean diffuse horizontal irradiance (over 1 minute) in W/sq m'}, inplace = True) 
