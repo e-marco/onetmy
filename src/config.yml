@@ -1,0 +1,215 @@
+# This file configures all of OneTMY, apart
+# from the logging (which is done in
+# logconfig.yml)
+
+folders:
+  # Each station's data files (.csv files) are
+  # kept in one folder (currently
+  # '<source>/<station_name>'). Data files
+  # follow the naming convention:
+  # <type>_<station_id>_<year>_<month>.csv
+  # Type is 'sl' for solar files and 'aw' for
+  # weather files
+  # All of this information is used in the
+  # regular expression 'pattern' in each station
+  # definition. Try this: https://regexr.com/
+  source: D:/Datasets/BOM_RAW/fixed_header/
+  destination-tmy: D:/Datasets/TMY_2022/{}_TMY.csv
+  destination-filtered: D:/Datasets/BOM_RAW/filtered/
+  pattern: .*(sl|aw)_\d{6}_(\d{4})_(\d{2}).csv
+
+stations:
+  # Define the location of the stations.
+  "003003":
+    latitude: -17.9475
+    longitude: 122.2353
+    timezone: Australia/West
+    offset: 480
+
+  "005007":
+    latitude: -22.2406
+    longitude: 114.0967
+    timezone: Australia/West
+    offset: 480
+
+  "008051":
+    latitude: -28.7953
+    longitude: 114.6975
+    timezone: Australia/West
+    offset: 480
+
+  "012038":
+    latitude: -30.7847
+    longitude: 121.4533
+    timezone: Australia/Perth
+    offset: 480
+
+  "014015":
+    latitude: -12.4239
+    longitude: 130.8925
+    timezone: Australia/Darwin
+    offset: 570
+
+  "015135":
+    latitude: -19.6423
+    longitude: 134.1833
+    timezone: Australia/Darwin
+    offset: 570
+
+  "015590":
+    latitude: -23.7951
+    longitude: 133.889
+    timezone: Australia/Darwin
+    offset: 570
+
+  "023034":
+    latitude: -34.9524
+    longitude: 138.5204
+    timezone: Australia/Adelaide
+    offset: 570
+
+  "026021":
+    latitude: -37.7473
+    longitude: 140.7739
+    timezone: Australia/Adelaide
+    offset: 570
+
+  "031011":
+    latitude: -16.8736
+    longitude: 145.7458
+    timezone: Australia/Brisbane
+    offset: 600
+
+  "039083":
+    latitude: -23.3753
+    longitude: 150.4775
+    timezone: Australia/Brisbane
+    offset: 600
+  "072150":
+    latitude: -35.1583
+    longitude: 147.4575
+    timezone: Australia/Sydney
+    offset: 600
+
+  "076031":
+    latitude: -34.2358
+    longitude: 142.0867
+    timezone: Australia/Sydney
+    offset: 600
+
+  "086282":
+    latitude: -37.6655
+    longitude: 144.8321
+    timezone: Australia/Melbourne
+    offset: 600
+
+  "091148":
+    latitude: -40.6817
+    longitude: 144.6892
+    timezone: Australia/Hobart
+    offset: 600
+
+  "200284":
+    latitude: -12.1892
+    longitude: 96.8344
+    timezone: Asia/Jakarta
+    offset: 390
+
+  "008315":
+    latitude: -28.8047
+    longitude: 114.6989
+    timezone: Australia/West
+    offset: 480
+
+  "016001":
+    latitude: -31.1558
+    longitude: 136.8054
+    timezone: Australia/Adelaide
+    offset: 570
+
+  "032040":
+    latitude: -19.2483
+    longitude: 146.7661
+    timezone: Australia/Brisbane
+    offset: 600
+
+  "036031":
+    latitude: -23.4397
+    longitude: 144.2828
+    timezone: Australia/Brisbane
+    offset: 600
+
+  "048027":
+    latitude: -31.4840
+    longitude: 145.8294
+    timezone: Australia/Sydney
+    offset: 600
+
+time:
+  # The BoM data files have multiple timestamps
+  # for each observation. All are defined here,
+  # and OneTMY uses whichever one is more
+  # reliable
+
+  utc:
+    timezone: UTC
+    file_format:
+      year: YYYY-UTC
+      month: MM-UTC
+      day: DD-UTC
+      hour: HH-UTC
+      minute: MI-UTC
+  lst:
+    timezone: Station
+    file_format:
+      year: YYYY-LST
+      month: MM-LST
+      day: DD-LST
+      hour: HH-LST
+      minute: MI-LST
+
+weather:
+  # Some of these are required, some aren't.
+  # flagtools.py is set up to ignore any
+  # observations that don't have the
+  # quality flag 'Y'
+
+  precip: Precipitation since last (AWS) observation in mm
+  #precip-quality: Quality of precipitation since last (AWS) observation value
+  air-temp: Air Temperature in degrees Celsius
+  air-temp-flag: Quality of air temperature
+  #air-temp-max: Air temperature (1-minute maximum) in degrees Celsius
+  #air-temp-max-flag: Quality of air temperature (1-minute maximum)
+  #air-temp-min: Air temperature (1-minute minimum) in degrees Celsius
+  #air-temp-min-flag: Quality of air temperature (1-minute minimum)
+  wet-bulb: Wet bulb temperature in degrees Celsius
+  #wet-bulb-quality: Quality of Wet bulb temperature
+  #wet-bulb-max: Wet bulb temperature (1 minute maximum) in degrees Celsius
+  #wet-bulb-max-flag: Quality of wet bulb temperature (1 minute maximum)
+  #wet-bulb-min: Wet bulb temperature (1 minute minimum) in degrees Celsius
+  #wet-bulb-min-flag: Quality of wet bulb temperature (1 minute minimum)
+  dew-point: Dew point temperature in degrees Celsius
+  #dew-point-quality: Quality of dew point temperature
+  relative-humidity: Relative humidity in percentage %
+  relative-humidity-flag: Quality of relative humidity
+  wind-speed: Wind (1 minute) speed in km/h
+  wind-speed-flag: Wind (1 minute) speed quality
+  wind-speed-max: Maximum wind gust (over 1 minute) in km/h
+  wind-speed-max-flag: Maximum wind gust (over 1 minute) quality
+  #wind-speed-min: Minimum wind speed (over 1 minute) in km/h
+  #wind-speed-min-flag: Minimum wind speed (over 1 minute) quality
+  wind-direction: Wind (1 minute) direction in degrees true
+  #wind-direction-quality: Wind (1 minute) direction quality
+  station-level-pressure: Station level pressure in hPa
+  #station-level-pressure-quality: Quality of station level pressure
+
+solar:
+  mean-ghi: Mean global irradiance (over 1 minute) in W/sq m
+  mean-dni: Mean direct irradiance (over 1 minute) in W/sq m
+  mean-dhi: Mean diffuse irradiance (over 1 minute) in W/sq m
+
+tmy:
+  variables: ["mean-dni", "mean-ghi"]
+  weighting: [0.75, 0.25]
+  sort-by-windspeed: false
+  sort-by-least-number-missing-days: true

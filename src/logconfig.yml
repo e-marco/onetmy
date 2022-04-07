@@ -1,0 +1,24 @@
+version: 1
+
+formatters:
+  full:
+    format: '%(asctime)s.%(msecs)03d - %(levelname)s: %(message)s'
+    datefmt: '%Y-%m-%d %H:%M:%S'
+  simple:
+    format: '%(levelname)s: %(message)s'
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: INFO         # not everything is logged to the console
+    formatter: simple
+    stream: ext://sys.stdout
+  file:
+    class: logging.FileHandler
+    level: DEBUG        # everything will be logged to the file
+    formatter: full
+    filename: onetmy.log
+
+root:
+  level: DEBUG
+  handlers: [console, file]
