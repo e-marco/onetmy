@@ -198,7 +198,7 @@ def processStation(station, source_dir, pattern, outpath):
 		
 		for new_header in HEADER_MAP:
 			old_header = HEADER_MAP[new_header]
-			if old_header in df:
+			if new_header in df:
 				df.rename(columns={new_header:old_header}, inplace=True)
 		
 		cols = df.columns.tolist()
