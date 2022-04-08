@@ -104,11 +104,17 @@ tmy:
   weighting: [0.75, 0.25]
   sort-by-windspeed: false
   sort-by-least-number-missing-days: true
+  min-years: 10
+  required-columns: ["mean-ghi", "mean-dni", "mean-dhi", "air-temp"]
 ```
 
 sort-by-windspeed: Top three candidates will be sorted based on the smallest deviation in average monthly windspeed.
 
 sort-by-least-number-missing-days: Ranking for best three candidates based on least number of days with gaps. This may override results from windspeed selection.
+
+min-years: Minimum required available years for each month.
+
+required-columns: If any these columns are incomplete, the TMY will not be generated for the station.
 
 ## Example `config.yml` file
 

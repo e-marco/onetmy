@@ -59,7 +59,7 @@ def run(dir, pattern):
                 # Now hopefully both year an month have been
                 # set. Otherwise, don't add this file
                 if year!=None and month!=None:
-                    logging.debug('File match: '+str(path))
+                    #logging.debug('File match: '+str(path))
                     key = datetime.datetime(year, month, 1)
                     # If there's already a file for this month,
                     # don't overwrite its value!

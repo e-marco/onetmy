@@ -4,7 +4,7 @@ import logging.config
 import os
 import pandas as pd
 import load
-from config_parse import CONFIG
+from config_parse import CONFIG, HEADER_MAP
 import fill
 import filesearch
 import validation
@@ -26,6 +26,8 @@ def processMonth(station, paths):
 
 	calendar_month = list(paths.keys())[0].strftime('%B')
 
+	
+	
 	# Data is a dictionary with keys that are
 	# datetime.datetime objects, values that are
 	# dataframes
@@ -33,41 +35,49 @@ def processMonth(station, paths):
 
 	for month in paths:	# remember: month is a datetime object
 
-		# Load any files associated with this particular month
-		#logging.info('Loading...')
-		df = load.load(paths[month], station, month.year, month.month)
-		
-		if df is None:
-			logging.warning('Skipping this month')
-			continue
-		logging.info('Validation...')
-		# Run some validation to check we should keep going
-		validation.removePatchyColumns(df, 0.7)
-		if not validation.requiredColumns(df):
-			logging.warning('Required columns not present in dataframe. Skipping this month')
-			continue
-		logging.info('Fill gaps...')
-		# Fill gaps (logical filling and plain interpolation)
-		# This procedure checks the data requirement BETWEEN
-		# logical filling and interpolation, as specified by
-		# our theory. If we don't meet the requirement, quit
-		# this month
-		fill_success = fill.fill(df, station)
-		if not fill_success: continue
-
-		logging.info('Successful load of '+str(month))
-		data[month] = df
-		
-		# exporting gap-filled data
 		name = station+month.strftime("_%Y_%m")
-		path = os.path.normpath(preprocesspath+'/'+name+'.csv')
-		tmy.export.to_csv(df, path)
+		out_path = os.path.normpath(preprocesspath+'/'+name+'.csv')
+		
+		if not os.path.exists(out_path):
+			# Load any files associated with this particular month
+			#logging.info('Loading...')
+			df = load.load(paths[month], station, month.year, month.month)
+			
+			if df is None:
+				logging.warning('Skipping this month')
+				continue
+			logging.info('Validation...')
+			# Run some validation to check we should keep going
+			validation.removePatchyColumns(df, 0.7)
+			if not validation.requiredColumns(df):
+				logging.warning('Required columns not present in dataframe. Skipping this month')
+				continue
+			logging.info('Fill gaps...')
+			# Fill gaps (logical filling and plain interpolation)
+			# This procedure checks the data requirement BETWEEN
+			# logical filling and interpolation, as specified by
+			# our theory. If we don't meet the requirement, quit
+			# this month
+			fill_success = fill.fill(df, station)
+			if not fill_success: continue
+
+			logging.info('Successful load of '+str(month))
+			data[month] = df
+			
+			# exporting gap-filled data
+			tmy.export.to_csv(df, out_path)
+			
+			
+		else:
+			logging.info('Loading of existing '+str(month))
+			df = pd.read_csv(out_path, parse_dates=True, index_col=0)
+			data[month] = df
 
 	# Check to see if we have enough of this
 	# calendar month to continue. If we don't,
 	# the TMY can't be made and we should quit
 	# the processing of this month
-	if not validation.month(list(data.keys()), 1):
+	if not validation.month(list(data.keys()), 10):
 		logging.error('Not enough data for this calendar month('+calendar_month+'). Quitting processing of station "'+station+'"')
 		return None, None
 
@@ -121,7 +131,7 @@ def processStation(station, source_dir, pattern, outpath):
 		return False
 
 	dates = list(paths.keys())
-	if not validation.months(dates, 10):
+	if not validation.months(dates, CONFIG['tmy']['min-years']):
 		logging.warning('Data requirement not satisfied. Quitting processing of station "'+station+'"')
 		return False
 
@@ -185,18 +195,12 @@ def processStation(station, source_dir, pattern, outpath):
 		df['Hour'] = pd.DatetimeIndex(df['datetime']).hour
 		df['Minute (Local Standard Time)'] = pd.DatetimeIndex(df['datetime']).minute
 		del df['datetime']
-		df.rename(columns = {'precip':'Precipitation since last (AWS) observation in mm', 
-							  'air-temp':'Air Temperature in degrees Celsius', 
-							  'wet-bulb':'Wet bulb temperature in degrees Celsius', 
-							  'dew-point':'Dew point temperature in degrees Celsius', 
-							  'relative-humidity':'Relative humidity in percentage %', 
-							  'wind-speed':'Wind (1 minute) speed in km/h', 
-							  'wind-speed-max': 'Maximum wind gust (over 1 minute) in km/h',
-							  'wind-direction':'Wind (1 minute) direction in degrees true', 
-							  'station-level-pressure':'Station level pressure in hPa',
-							  'mean-ghi':'Mean global horizontal irradiance (over 1 minute) in W/sq m', 
-							  'mean-dni':'Mean direct normal irradiance (over 1 minute) in W/sq m', 
-							  'mean-dhi':'Mean diffuse horizontal irradiance (over 1 minute) in W/sq m'}, inplace = True) 
+		
+		for new_header in HEADER_MAP:
+			old_header = HEADER_MAP[new_header]
+			if old_header in df:
+				df.rename(columns={new_header:old_header}, inplace=True)
+		
 		cols = df.columns.tolist()
 		cols = cols[-1:] + cols[:-1]
 		cols = cols[-1:] + cols[:-1]
@@ -214,6 +218,7 @@ def processStation(station, source_dir, pattern, outpath):
 with open('logconfig.yml', 'r') as f:
 	logconfig = yaml.safe_load(f.read())
 	logging.config.dictConfig(logconfig)
+
 
 for station_name in CONFIG['stations']:
 	logging.info('Processing station "'+station_name+'"')

@@ -1,5 +1,6 @@
 import logging
 import datetime
+from config_parse import CONFIG
 
 def month(dates, required_n):
     """
@@ -97,5 +98,4 @@ def requiredColumns(df):
 """required_cols = ['mean-ghi', 'mean-dni', 'mean-dhi',
     'air-temp', 'relative-humidity', 'wind-speed']
 """
-required_cols = ['mean-ghi', 'mean-dni', 'mean-dhi',
-    'air-temp', 'relative-humidity']
+required_cols = CONFIG['tmy']['required-columns']

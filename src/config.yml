@@ -213,3 +213,5 @@ tmy:
   weighting: [0.75, 0.25]
   sort-by-windspeed: false
   sort-by-least-number-missing-days: true
+  min-years: 10
+  required-columns: ["mean-ghi", "mean-dni", "mean-dhi", "air-temp"]

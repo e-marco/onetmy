@@ -103,7 +103,10 @@ def fillRemainingGaps(data, ranked_candidates, extented_candidates):
 			# Remove the old day
 			#keys_to_replace = [k for k in list(wdf.index) if k.month==month and k.day==day]
 			
-			wdf.loc[source_keys] = replacement_day.values
+			try:
+				wdf.loc[source_keys] = replacement_day.values
+			except:
+				logging.error('Failed to replace missing data in winning month. Replacement data incomplete.')
 			
 			## old code
 			#wdf = wdf.drop(keys_to_replace)
